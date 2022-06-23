@@ -31,3 +31,14 @@ jobs:
     - run: cd integration-tests && npm run test:ithacanet -- --maxWorkers=8
       env:
         TEZOS_RPC_ITHACANET: http://ecad-ithacanet-tezedge.i.tez.ie:8732
+    - 
+      name: Slack Notification
+      if: always()
+      uses: ravsamhq/notify-slack-action@v1
+      with:
+        status: ${{ job.status }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        notification_title: "Taquito Tezedge Integration Tests ${{job.status}}"
+        message_format: "{emoji} *{workflow}* {status_message} on <{commit_url}|{commit_sha}> | <{run_url}|View Run>"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.INTEGRATION_TESTS_SLACK_WEBHOOK }}
