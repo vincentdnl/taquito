@@ -4,9 +4,14 @@ import toBuffer from 'typedarray-to-buffer';
 import { openSecretBox } from '@stablelib/nacl';
 import * as sapling from '@airgap/sapling-wasm'
 import pbkdf2 from 'pbkdf2';
-import { Prefix, prefix, b58cdecode, b58cencode, validateSpendingKey } from '@taquito/utils';
+import { Prefix, prefix, b58cdecode, b58cencode, ValidationResult } from '@taquito/utils';
 import * as bip39 from "bip39";
 
+/**
+ * @description holds the spending key
+ * can instantiate from mnemonic word list or decrypt a encrypted spending key
+ * with access to instantiate a InMemoryViewingKey
+ */
 export class InMemorySpendingKey {
   #skBuf: Buffer
   /**
@@ -19,7 +24,7 @@ export class InMemorySpendingKey {
     const keyArr = b58cdecode(spendingKey, prefix[Prefix.SASK])
     // exit first if no password and key is encrypted
     if (!password && spendingKey.slice(0, 4) !== 'sask') {
-      throw new InvalidSpendingKey(spendingKey)
+      throw new InvalidSpendingKey(spendingKey, "no password Provided to decrypt")
     }
 
     if (password && spendingKey.slice(0, 4) !== 'sask') {
@@ -33,7 +38,7 @@ export class InMemorySpendingKey {
         new Uint8Array(encryptedSk),
         )
       if (!decrypted) {
-        throw new InvalidSpendingKey(spendingKey)
+        throw new InvalidSpendingKey(spendingKey, "Password incorrect")
       }
 
       this.#skBuf = toBuffer(decrypted)
@@ -45,14 +50,12 @@ export class InMemorySpendingKey {
 
   /**
    *
-   * @param mnemonic list of seed words
-   * CHECK
-   * @param derivationPath should be 'm/' check if param needed or if could be hardcoded
-   * @param password password used to generate spending key. with will be prefix MMXj without sask
+   * @param mnemonic list of words
+   * @param derivationPath tezos current standard 'm/'
    * @returns InMemorySpendingKey class instantiated
    */
 
-  static async fromMnemonic(mnemonic: string[], derivationPath: string, password?: string) {
+  static async fromMnemonic(mnemonic: string[], derivationPath = 'm/') {
     // no password passed here. password provided only changes from sask -> MMXj
     const fullSeed = (await bip39.mnemonicToSeed(mnemonic.join(' ')))
 
@@ -60,16 +63,16 @@ export class InMemorySpendingKey {
     const second32: Buffer = fullSeed.slice(32)
     // reduce seed bytes must be 32 bytes reflecting both halves
     const seed =  Buffer.from(first32.map((byte, index) => byte ^ second32[index]))
-    // create an extended spending key
+
     const spendingKeyArr = new Uint8Array(await sapling.getExtendedSpendingKey(seed, derivationPath))
 
     const spendingKey = b58cencode(spendingKeyArr, prefix[Prefix.SASK])
     // CHECK unnecessary catch ?
-    if (validateSpendingKey(spendingKey) !== 3) {
+    if (ValidationResult.VALID !== 3) {
       throw new InvalidSpendingKey(spendingKey)
     }
 
-    return new InMemorySpendingKey(spendingKey, password)
+    return new InMemorySpendingKey(spendingKey)
   }
 
   /**
