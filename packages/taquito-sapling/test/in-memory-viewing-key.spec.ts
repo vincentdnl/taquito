@@ -1,6 +1,6 @@
 import { InvalidSpendingKey } from '../src/error';
 import { InMemoryViewingKey } from '../src/in-memory-viewing-key';
-import { InMemorySpendingKey } from '../src/in-memory-spending-key.';
+import { InMemorySpendingKey } from '../src/in-memory-spending-key';
 
 describe('SaplingViewingKeyInMemory', () => {
   it('Should be instantiable with viewing key', async (done) => {
