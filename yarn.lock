@@ -2223,6 +2223,13 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/bip39@^3.0.0":
+  "integrity" "sha512-6CqBtChR2JHspepOd8Y2x2BYyq8GBN8hfrbBrbaj7s7j07kMaghvUPnsVTIYbr2c1yV0Pu50wBbVD56KSdalKQ=="
+  "resolved" "https://registry.npmjs.org/@types/bip39/-/bip39-3.0.0.tgz"
+  "version" "3.0.0"
+  dependencies:
+    "bip39" "*"
+
 "@types/bluebird@^3.5.36":
   "integrity" "sha512-HBNx4lhkxN7bx6P0++W8E289foSu8kO8GCk2unhuVggO+cE7rh9DhZUyPhUxNRG9m+5B5BTKxZQ5ZP92x/mx9Q=="
   "resolved" "https://registry.npmjs.org/@types/bluebird/-/bluebird-3.5.36.tgz"
@@ -3187,7 +3194,7 @@
   dependencies:
     "file-uri-to-path" "1.0.0"
 
-"bip39@^3.0.4":
+"bip39@*", "bip39@^3.0.4":
   "integrity" "sha512-YZKQlb752TrUWqHWj7XAwCSjYEgGAk+/Aas3V7NyjQeZYsztO8JnQUaCWhcnL4T+jL8nvB8typ2jRPzTlgugNw=="
   "resolved" "https://registry.npmjs.org/bip39/-/bip39-3.0.4.tgz"
   "version" "3.0.4"
