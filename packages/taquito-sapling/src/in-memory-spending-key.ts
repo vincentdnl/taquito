@@ -38,7 +38,7 @@ export class InMemorySpendingKey {
         new Uint8Array(encryptedSk),
         )
       if (!decrypted) {
-        throw new InvalidSpendingKey(spendingKey, "Password incorrect")
+        throw new InvalidSpendingKey(spendingKey, "Encrypted Spending Key or Password incorrect")
       }
 
       this.#skBuf = toBuffer(decrypted)
